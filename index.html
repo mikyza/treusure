@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystery Vault Casino Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: #fff; text-align: center; margin-top: 50px; }
+        .game-container { max-width: 900px; margin: auto; }
+        #balance-container { position: absolute; top: 20px; right: 20px; display: flex; align-items: center; }
+        .dw-btn { background: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 10px; margin-right: 10px; cursor: pointer; }
+        #balance { font-size: 24px; }
+        .vault-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+        .vault { background: #444; border: none; color: white; padding: 15px; cursor: pointer; border-radius: 10px; font-size: 16px; }
+        .vault:hover { background: #666; }
+        .cashout-btn, .bet-btn { background: #FFD700; color: black; padding: 15px 30px; border: none; border-radius: 10px; font-size: 18px; margin-top: 20px; cursor: pointer; }
+        .cashout-btn:hover, .bet-btn:hover { background: #FFC107; }
+        .log { margin-top: 20px; text-align: left; max-height: 50px; overflow-y: hidden; padding: 10px; border: 1px solid #555; border-radius: 10px; }
+        .input-container { margin-top: 20px; }
+        input { padding: 10px; font-size: 16px; border-radius: 5px; border: none; width: 100px; text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🔒 Mystery Vault Casino Game</h1>
+        <div id="balance-container">
+            <button onclick="location.href='deposit_withdraw.html'" class="dw-btn">Deposit/Withdraw</button>
+            <span id="balance">$1000</span>
+        </div>
+
+        <!-- Stake Input & Bet Button -->
+        <div class="input-container" id="input-section">
+            <input type="number" id="stake-input" placeholder="Enter stake" min="1">
+            <button onclick="startGame()" class="bet-btn">Bet</button>
+        </div>
+
+        <div id="vault-container" class="vault-grid"></div>
+        <button onclick="cashOut()" class="cashout-btn hidden" id="cashout-btn">Cash Out</button>
+
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        let vaults = [];
+        let stake = 0;
+        let winnings = 0;
+        let balance = 1000;
+        const totalVaults = 25;
+        const multipliers = [0.2, 2, 5, 0.5, 30, 0, 0, 10, 5, 1, 1.2, 3, 15, 0, 1.7, 2.7, 0, 20, 1, 0.4, 9];
+
+        function initializeVaults() {
+            vaults = [...multipliers];
+            vaults = vaults.map(multiplier => (Math.random() < 0.15 ? 0 : multiplier));
+            while (vaults.length < totalVaults) {
+                vaults.push(0);
+            }
+            vaults.sort(() => Math.random() - 0.5);
+        }
+
+        function startGame() {
+            const stakeInput = document.getElementById('stake-input').value;
+            if (!stakeInput || stakeInput <= 0 || stakeInput > balance) {
+                updateWinningHistory("❌ Invalid stake amount!");
+                return;
+            }
+
+            stake = parseInt(stakeInput);
+            winnings = 0;
+            updateBalance(-stake);
+            initializeVaults();
+            updateWinningHistory(`Game started with stake: $${stake}`);
+            renderVaults();
+
+            // Hide stake input & bet button
+            document.getElementById('input-section').classList.add('hidden');
+            document.getElementById('cashout-btn').classList.remove('hidden');
+        }
+
+        function pickVault(index) {
+            if (vaults[index] === 0) {
+                updateWinningHistory("💥 Bust! You lost this round.");
+                winnings = 0;
+                endGame();
+            } else {
+                winnings += stake * vaults[index];
+                updateWinningHistory(`🎉 You found ${vaults[index]}x! Winnings: $${winnings}`);
+                vaults[index] = 0;
+                renderVaults();
+            }
+        }
+
+        function cashOut() {
+            updateWinningHistory(`💰 Cashed out with $${winnings}`);
+            updateBalance(winnings);
+            endGame();
+        }
+
+        function endGame() {
+            winnings = 0;
+            initializeVaults();
+            renderVaults();
+            
+            // Show stake input & bet button again
+            document.getElementById('input-section').classList.remove('hidden');
+            document.getElementById('cashout-btn').classList.add('hidden');
+        }
+
+        function updateWinningHistory(message) {
+            const log = document.getElementById('log');
+            log.innerHTML = `<p>${message}</p>`; // Show only last message
+
+            setTimeout(() => {
+                log.innerHTML = ''; // Clear message after 3 sec
+            }, 3000);
+        }
+
+        function updateBalance(amount) {
+            balance += amount;
+            document.getElementById('balance').textContent = `$${balance}`;
+        }
+
+        function renderVaults() {
+            const container = document.getElementById('vault-container');
+            container.innerHTML = '';
+            vaults.forEach((_, index) => {
+                const button = document.createElement('button');
+                button.className = 'vault';
+                button.innerText = `Vault ${index + 1}`;
+                button.onclick = () => pickVault(index);
+                container.appendChild(button);
+            });
+        }
+
+        window.onload = initializeVaults;
+    </script>
+</body>
+</html>
