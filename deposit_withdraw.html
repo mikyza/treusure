@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit/Withdraw</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle, #2b0a3d, #0a0213);
+            color: #fff;
+            font-family: 'Luckiest Guy', cursive;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        h1 {
+            color: gold;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        label {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            padding: 15px;
+            font-size: 22px;
+            border: 3px solid gold;
+            border-radius: 10px;
+            text-align: center;
+            background: #000;
+            color: gold;
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #00ff00, #008000);
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .back-btn {
+            background: linear-gradient(145deg, #ff6600, #ff3300);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Deposit/Withdraw</h1>
+
+        <div class="input-group">
+            <label for="amount">Enter Amount:</label>
+            <input type="number" id="amount" placeholder="Ksh" />
+        </div>
+
+        <button onclick="deposit()">Deposit</button>
+        <button onclick="withdraw()">Withdraw</button>
+
+        <button class="back-btn" onclick="goBack()">Back to Game</button>
+    </div>
+
+    <script>
+        function deposit() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (amount > 0) {
+                alert(`Ksh ${amount} deposited successfully!`);
+                localStorage.setItem('balance', (getBalance() + amount));
+            } else {
+                alert('Enter a valid amount to deposit.');
+            }
+        }
+
+        function withdraw() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (amount > 0 && amount <= getBalance()) {
+                alert(`Ksh ${amount} withdrawn successfully!`);
+                localStorage.setItem('balance', (getBalance() - amount));
+            } else {
+                alert('Invalid amount or insufficient balance.');
+            }
+        }
+
+        function getBalance() {
+            return parseFloat(localStorage.getItem('balance')) || 1000;
+        }
+
+        function goBack() {
+            window.location.href = 'sppin2.html';
+        }
+    </script>
+</body>
+</html>
