@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Pesa Deposit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, #2b0a3d, #0a0213);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 255, 0, 0.5);
+            border-radius: 50%;
+            filter: blur(120px);
+            top: 20%;
+            left: 10%;
+            animation: glow 6s infinite alternate;
+        }
+        
+        body::after {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            filter: blur(150px);
+            bottom: 10%;
+            right: 15%;
+            animation: glow 6s infinite alternate-reverse;
+        }
+        
+        @keyframes glow {
+            from {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            to {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            box-shadow: 0px 0px 30px rgba(255, 215, 0, 0.8);
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .mpesa-logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 2px solid gold;
+            border-radius: 5px;
+            font-size: 18px;
+            background: #000;
+            color: gold;
+            text-align: center;
+        }
+        
+        .pay-btn {
+            background: linear-gradient(145deg, #00ff00, #008000);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            transition: transform 0.2s ease;
+        }
+        
+        .pay-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="Screenshot (331) (1).png" alt="M-Pesa Logo" class="mpesa-logo">
+        <h2 style="color: gold;">Deposit via M-Pesa</h2>
+        <input type="text" id="phone" placeholder="Enter M-Pesa Number" />
+        <input type="number" id="amount" placeholder="Enter Amount (KSH)" />
+        <button class="pay-btn" onclick="makeDeposit()">Pay</button>
+    </div>
+
+    <script>
+        function makeDeposit() {
+            const phone = document.getElementById("phone").value;
+            const amount = document.getElementById("amount").value;
+
+            if (!phone || !amount || amount <= 0) {
+                alert("Please enter a valid phone number and amount.");
+                return;
+            }
+
+            fetch("http://localhost:5000/mpesa/deposit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone, amount })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => alert("Payment request failed!"));
+        }
+    </script>
+</body>
+</html>
